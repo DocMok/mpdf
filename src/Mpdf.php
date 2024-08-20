@@ -1042,6 +1042,8 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 	 */
 	private $container;
 
+    private $leadersChar;
+
 	/**
 	 * @param mixed[] $config
 	 * @param \Mpdf\Container\ContainerInterface|null $container Experimental container to override internal services
@@ -1063,7 +1065,8 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			$mgb,
 			$mgh,
 			$mgf,
-			$orientation
+			$orientation,
+            $leadersChar
 		) = $this->initConstructorParams($config);
 
 		$this->logger = new NullLogger();
@@ -1564,6 +1567,8 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 
 		$this->specialcontent = '';
 		$this->selectoption = [];
+
+        $this->leadersChar = $leadersChar;
 	}
 
 	public function cleanup()
@@ -1607,6 +1612,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			'margin_header' => 9,
 			'margin_footer' => 9,
 			'orientation' => 'P',
+            'leaders_char' => '.',
 		];
 
 		foreach ($constructor as $key => $val) {
@@ -7609,9 +7615,9 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 					$this->SetFont($objattr['fontfamily'], '', $objattr['fontsize']);
 				}
 				$sp = $this->GetStringWidth(' ');
-				$nb = floor(($w - 2 * $sp) / $this->GetStringWidth('.'));
+				$nb = floor(($w - 2 * $sp) / $this->GetStringWidth($this->leadersChar));
 				if ($nb > 0) {
-					$dots = ' ' . str_repeat('.', $nb) . ' ';
+					$dots = ' ' . str_repeat($this->leadersChar, $nb) . ' ';
 				} else {
 					$dots = ' ';
 				}
